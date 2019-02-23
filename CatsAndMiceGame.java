@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit; // needed for the delay between the consec
 
 public class CatsAndMiceGame {
     // CONSTANTS:
-    public static final int BOARD_SIZE = 9; // 2 < BOARD_SIZE < 100 (AN ODD NUMBER!)
+    public static final int BOARD_SIZE = 5; // 2 < BOARD_SIZE < 100 (AN ODD NUMBER!)
     public static final int B_S_SQR = BOARD_SIZE * BOARD_SIZE; // used several times in the code so I preferred
                     // to calculate it here once and use as a constant instead of using the pow() function each time
     public static final int MAX_MICE = 4; // 1 < MAX_MICE < 100
-    public static final int MAX_CATS = 4; // 1 < MAX_CATS < 100
+    public static final int MAX_CATS = 7; // 1 < MAX_CATS < 100
     public static final int DRAW_BOARD_PERIOD = 3; // the board is displayed ever DRAW_BOARD_PERIOD turns
     public static final int DELAY = 1000; // the delay between the rounds in milliseconds
 
@@ -28,9 +28,10 @@ public class CatsAndMiceGame {
         // Initialize the board:
         Board theBoard = new Board();
         int[] edge = new int[4 * (BOARD_SIZE - 1)]; // A list of fields on the edge of the board
-        int[] inner = new int[B_S_SQR - 4 * BOARD_SIZE + 4]; // A list of fields in the inner part of the board
+        //int[] inner = new int[B_S_SQR - 4 * BOARD_SIZE + 4]; // A list of fields in the inner part of the board
+        ArrayList<Integer> inner = new ArrayList<>();
         int e = 0;
-        int in = 0;
+        //int in = 0;
         for (int i = 0; i < B_S_SQR; i++) {
             // conditions to check whether a BoardField is on the edge of a Board:
             if (((i % BOARD_SIZE) == 0)
@@ -40,8 +41,9 @@ public class CatsAndMiceGame {
                 edge[e] = i;
                 e++;
             } else {
-                inner[in] = i;
-                in++;
+                //inner[in] = i;
+                inner.add(i);
+                //in++;
             }
         }
 
@@ -50,17 +52,22 @@ public class CatsAndMiceGame {
         for (int i = 0; i < MAX_CATS; i++) {
             Cat aCat = new Cat(); // create a new cat
             int rnd = ThreadLocalRandom.current().nextInt(0, B_S_SQR - 4 * BOARD_SIZE + 4);
-            aCat.setFieldNumber(inner[rnd]); // assign a random field from the inner part of the board to the cat
+            aCat.setFieldNumber(inner.get(rnd)); // assign a random field from the inner part of the board to the cat
+            inner.remove(rnd);
             cats.add(i, aCat); // add the cat to the cats list
             theBoard.getBoardFields()[aCat.fieldNumber].setCat(true); // 'put' the cat on a field
         }
 
         // Initialize the mice:
         ArrayList<Mouse> mice = new ArrayList<>(); // create a list of mice
+        double distance = edge.length / MAX_MICE;
+        int place = 0;
         for (int i = 0; i < MAX_MICE; i++) {
-            Mouse aMouse = new Mouse(i); // create a new mouse
-            int rnd = ThreadLocalRandom.current().nextInt(0, 4 * (BOARD_SIZE - 1));
-            aMouse.setFieldNumber(edge[rnd]); // assign a random field from the edge of the board to the mouse
+            Mouse aMouse = new Mouse(i); // create a new
+            //int rnd = ThreadLocalRandom.current().nextInt(0, 4 * (BOARD_SIZE - 1));
+            //aMouse.setFieldNumber(edge[rnd]); // assign a random field from the edge of the board to the mouse
+            aMouse.setFieldNumber(edge[place]);
+            place += (int) distance;
             mouseCounter++; // increase the mouseCounter
             mice.add(i, aMouse); // add the mouse to the mice list
             theBoard.getBoardFields()[aMouse.fieldNumber].setMouse(true); // 'put' the mouse on a field
